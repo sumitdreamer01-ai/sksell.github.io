@@ -5,12 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SK Sell</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial,sans-serif;
+font-family:'Poppins',sans-serif;
 }
 
 body{
@@ -18,10 +21,28 @@ background:#f5f5f5;
 }
 
 header{
-background:linear-gradient(90deg,#ff6600,#ff9900);
+background:#ff6600;
 color:#fff;
-text-align:center;
 padding:20px;
+text-align:center;
+}
+
+header h1{
+font-size:32px;
+}
+
+.search{
+padding:15px;
+text-align:center;
+}
+
+.search input{
+width:90%;
+max-width:450px;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
 }
 
 .products{
@@ -35,7 +56,7 @@ padding:20px;
 background:#fff;
 border-radius:12px;
 padding:15px;
-box-shadow:0 5px 10px rgba(0,0,0,.15);
+box-shadow:0 5px 15px rgba(0,0,0,.15);
 text-align:center;
 }
 
@@ -57,20 +78,21 @@ button{
 background:#25D366;
 color:white;
 border:none;
-padding:12px 20px;
+padding:12px 18px;
 border-radius:30px;
-font-size:16px;
 cursor:pointer;
+font-size:16px;
 }
 
 footer{
 background:#222;
 color:#fff;
-text-align:center;
 padding:20px;
+text-align:center;
 margin-top:20px;
 }
 </style>
+
 </head>
 
 <body>
@@ -80,15 +102,20 @@ margin-top:20px;
 <p>Best Deals | WhatsApp Order</p>
 </header>
 
+<div class="search">
+<input type="text" id="search" placeholder="Search Products...">
+</div>
+
 <section class="products" id="products">
-</section>
+  </section>
 
 <footer>
-<h2>WhatsApp : 8709033711</h2>
+  <h2>📞 WhatsApp: 8709033711</h2>
+  <p>© 2026 SK Sell | Online Store</p>
 </footer>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -103,17 +130,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const productsDiv = document.getElementById("products");
+const products = document.getElementById("products");
+const search = document.getElementById("search");
+
+let allProducts = [];
 
 async function loadProducts() {
-  const querySnapshot = await getDocs(collection(db, "Products"));
+  const snap = await getDocs(collection(db, "Products"));
 
-  querySnapshot.forEach((doc) => {
-    const p = doc.data();
+  snap.forEach((doc) => {
+    allProducts.push(doc.data());
+  });
 
-    productsDiv.innerHTML += `
+  showProducts(allProducts);
+}
+
+function showProducts(list) {
+  products.innerHTML = "";
+
+  list.forEach((p) => {
+    products.innerHTML += `
       <div class="card">
-        <img src="${p.Image}">
+        <img src="${p.Image}" alt="${p.Name}">
         <h3>${p.Name}</h3>
         <p class="price">₹${p.Price}</p>
         <a href="https://wa.me/918709033711?text=I want to order ${encodeURIComponent(p.Name)}">
@@ -124,8 +162,19 @@ async function loadProducts() {
   });
 }
 
+search.addEventListener("input", () => {
+  const text = search.value.toLowerCase();
+  showProducts(
+    allProducts.filter(p =>
+      p.Name.toLowerCase().includes(text)
+    )
+  );
+});
+
 loadProducts();
-</script>
+  </script>
 
 </body>
 </html>
+  
+  
